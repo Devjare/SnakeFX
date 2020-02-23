@@ -11,6 +11,10 @@ public class Snake {
 			this.y = y;
 		}
 
+		public Corner() {
+			// TODO Auto-generated constructor stub
+		}
+
 		@Override
 		public String toString() {
 			return "[x: " + x + ", y: " + y + "]";
@@ -31,6 +35,10 @@ public class Snake {
 		this.corners.add(headCorner);
 		this.corners.add(new Corner(headCorner.x - 5, headCorner.y));
 		this.corners.add(new Corner(headCorner.x - 10, headCorner.y));
+		this.corners.add(new Corner(headCorner.x - 15, headCorner.y));
+		this.corners.add(new Corner(headCorner.x - 20, headCorner.y));
+		this.corners.add(new Corner(headCorner.x - 25, headCorner.y));
+		this.corners.add(new Corner(headCorner.x - 30, headCorner.y));
 
 		this.direction = Direction.RIGHT;
 		this.length = corners.size();
@@ -41,17 +49,15 @@ public class Snake {
 		this.direction = Direction.RIGHT;
 
 		var head = this.corners.get(0);
-
-		for (int i = 0; i < this.corners.size() - 1; i++) {
-			if (i > 1) {
-				
-				this.corners.set(i, this.corners.get(i - 1));
-			} else if (i == 0) {
-				this.corners.get(i).x += speed;
-			} else {
-				if(this.direction.equals(Direction.RIGHT))
-					this.corners.set(1, head);
-			}
+		this.corners.set(0, new Corner(head.x + speed, head.y));
+		
+		var temp = this.corners.get(1);
+		this.corners.set(1, head);
+		
+		for (int i = 2; i < this.corners.size(); i++) {
+			var tmp = this.corners.get(i);
+			this.corners.set(i, temp);
+			temp = tmp;
 		}
 	}
 
@@ -60,15 +66,15 @@ public class Snake {
 		this.direction = Direction.LEFT;
 
 		var head = this.corners.get(0);
-
-		for (int i = 0; i < this.corners.size() - 1; i++) {
-			if (i > 1) {
-				this.corners.set(i, this.corners.get(i - 1));
-			} else if (i == 0) {
-				this.corners.get(i).x -= speed;
-			} else {
-				this.corners.set(i, head);
-			}
+		this.corners.set(0, new Corner(head.x - speed, head.y));
+		
+		var temp = this.corners.get(1);
+		this.corners.set(1, head);
+		
+		for (int i = 2; i < this.corners.size(); i++) {
+			var tmp = this.corners.get(i);
+			this.corners.set(i, temp);
+			temp = tmp;
 		}
 	}
 
@@ -77,15 +83,15 @@ public class Snake {
 		this.direction = Direction.UP;
 		
 		var head = this.corners.get(0);
-
-		for (int i = 0; i < this.corners.size() - 1; i++) {
-			if (i > 1) {
-				this.corners.set(i, this.corners.get(i - 1));
-			} else if (i == 0) {
-				this.corners.get(i).y -= speed;
-			} else {
-				this.corners.set(i, head);
-			}
+		this.corners.set(0, new Corner(head.x, head.y - speed));
+		
+		var temp = this.corners.get(1);
+		this.corners.set(1, head);
+		
+		for (int i = 2; i < this.corners.size(); i++) {
+			var tmp = this.corners.get(i);
+			this.corners.set(i, temp);
+			temp = tmp;
 		}
 	}
 
@@ -94,15 +100,15 @@ public class Snake {
 		this.direction = Direction.DOWN;
 		
 		var head = this.corners.get(0);
-
-		for (int i = 0; i < this.corners.size() - 1; i++) {
-			if (i > 1) {
-				this.corners.set(i, this.corners.get(i - 1));
-			} else if (i == 0) {
-				this.corners.get(i).y += speed;
-			} else {
-				this.corners.set(i, head);
-			}
+		this.corners.set(0, new Corner(head.x, head.y + speed));
+		
+		var temp = this.corners.get(1);
+		this.corners.set(1, head);
+		
+		for (int i = 2; i < this.corners.size(); i++) {
+			var tmp = this.corners.get(i);
+			this.corners.set(i, temp);
+			temp = tmp;
 		}
 	}
 
@@ -114,10 +120,6 @@ public class Snake {
 		return this.corners.get(0);
 	}
 
-	public ArrayList<Corner> getCorners() {
-		return this.corners;	
-	}
-	
 	@Override
 	public String toString() {
 		return "Snake [corners=" + corners + ", length=" + length + ", direction=" + direction + "]";
@@ -125,6 +127,23 @@ public class Snake {
 
 	public String getCornersPositions() {
 		return corners.toString();
+	}
+
+	public ArrayList<Corner> getCorners() {
+		return this.corners;
+	}
+
+	public void eat() {
+		var last = this.corners.get(this.corners.size() - 1);
+		if(this.direction.equals(Direction.LEFT)) {
+			this.corners.add(new Corner(last.x + speed, last.y));
+		} else if(this.direction.equals(Direction.RIGHT)) {
+			this.corners.add(new Corner(last.x - speed, last.y));
+		} else if(this.direction.equals(Direction.DOWN)) {
+			this.corners.add(new Corner(last.x, last.y + speed));
+		} else if(this.direction.equals(Direction.UP)) {
+			this.corners.add(new Corner(last.x + speed, last.y - speed));
+		}
 	}
 
 }

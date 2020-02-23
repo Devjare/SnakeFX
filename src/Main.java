@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main extends Application {
@@ -50,19 +51,27 @@ public class Main extends Application {
 		var timer = new AnimationTimer() {
 
 			long lastTick = 0;
-
+			private int foodCount = 0;
+			private ArrayList<Circle> food = generateFood();
+			
+			
 			@Override
 			public void handle(long now) {
 
 				clearScreen();
-				drawSnake();
 				
-				long tick = now / 1000000000L;
+				drawSnake();
+
+				if (!isFoodOnPlane()) {
+					drawFood();
+				}
+
+				long tick = now / 100000000L;
 
 				if (lastTick != tick) {
 
 					System.out.println("Snake body: " + snake.getCornersPositions());
-					
+
 					var snakeDirection = snake.getDirection();
 
 					if (snakeDirection.equals(Snake.Direction.RIGHT)) {
@@ -75,9 +84,43 @@ public class Main extends Application {
 						snake.moveUp();
 					}
 
+					if (isOnFood(snake)) {
+						snake.eat();
+						foodCount--;
+					}
+
 					lastTick = tick;
 				}
 
+			}
+
+			private ArrayList<Circle> generateFood() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			private boolean isOnFood(Snake snake) {
+				return snake.getHeadCorner().x == food.getCenterX() && snake.getHeadCorner().y == food.getCenterY();
+			}
+
+			private void drawFood() {
+				int max = WIDTH - 10;
+				int min = 10;
+				int randomX = min + (int) (Math.random() * (max - min + 1));
+				int randomY = min + (int) (Math.random() * (max - min + 1));
+
+				food = new Circle();
+				food.setCenterX(randomX);
+				food.setCenterY(randomY);
+				food.setFill(Color.RED);
+				food.setRadius(5);
+
+				root.getChildren().add(food);
+				foodCount++;
+			}
+
+			private boolean isFoodOnPlane() {
+				return foodCount > 0;
 			}
 
 			private void clearScreen() {
@@ -92,7 +135,7 @@ public class Main extends Application {
 					circle.setCenterY(corner.y);
 					circle.setRadius(5);
 					circle.setFill(Color.BLACK);
-					
+
 					root.getChildren().add(circle);
 				});
 			}
