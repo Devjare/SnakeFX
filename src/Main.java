@@ -50,30 +50,45 @@ public class Main extends Application {
 
 		var timer = new AnimationTimer() {
 
+			private final int SIZE = 5;
+			
 			long lastTick = 0;
 			private int foodCount = 0;
-			private ArrayList<Circle> food = generateFood();
-			
-			
+
+			int max = WIDTH - 10;
+			int min = 10;
+			int randomX = min + (int) (Math.random() * (max - min + 1));
+			int randomY = min + (int) (Math.random() * (max - min + 1));
+			private Circle food = new Circle(randomX, randomY, SIZE, Color.RED);
+			private boolean isFoodEaten = false;
+
 			@Override
 			public void handle(long now) {
 
 				clearScreen();
-				
+
 				drawSnake();
 
-				if (!isFoodOnPlane()) {
-					drawFood();
-				}
+				drawFood();
 
 				long tick = now / 100000000L;
 
 				if (lastTick != tick) {
 
-					System.out.println("Snake body: " + snake.getCornersPositions());
+// 					System.out.println("Snake body: " + snake.getCornersPositions());
 
 					var snakeDirection = snake.getDirection();
 
+					if (isOnFood(snake)) {
+						snake.eat();
+						System.out.println("Snake size: " + snake.getSize());
+						isFoodEaten = true;
+					}
+					
+					if (isOnSelf(snake)) {
+						gameOver();
+					}
+					
 					if (snakeDirection.equals(Snake.Direction.RIGHT)) {
 						snake.moveRight();
 					} else if (snakeDirection.equals(Snake.Direction.DOWN)) {
@@ -84,26 +99,58 @@ public class Main extends Application {
 						snake.moveUp();
 					}
 
-					if (isOnFood(snake)) {
-						snake.eat();
-						foodCount--;
-					}
-
 					lastTick = tick;
 				}
 
 			}
 
-			private ArrayList<Circle> generateFood() {
-				// TODO Auto-generated method stub
-				return null;
+			private void gameOver() {
+				clearScreen();
+				System.out.println("GAME OVER!");
+				System.exit(0);
+			}
+
+			private boolean isOnSelf(Snake snake) {
+				int x = snake.getHeadCorner().x;
+				int y = snake.getHeadCorner().y;
+				
+				var corners = snake.getCorners();
+				
+				for(int i = 1;i < corners.size();i++) {
+					if(x == corners.get(i).x && y == corners.get(i).y) 
+						return true;
+				}
+				
+				return false;
 			}
 
 			private boolean isOnFood(Snake snake) {
-				return snake.getHeadCorner().x == food.getCenterX() && snake.getHeadCorner().y == food.getCenterY();
+				int xOffset = SIZE + 1;
+				int yOffset = SIZE + 1;
+
+				int foodXCenter = (int) food.getCenterX();
+				int foodYCenter = (int) food.getCenterY();
+
+				int xFoodStart = foodXCenter - xOffset;
+				int xFoodEnd = foodXCenter + xOffset;
+
+				int yFoodStart = foodYCenter - yOffset;
+				int yFoodEnd = foodYCenter + yOffset;
+
+				int snakeXCorner = snake.getHeadCorner().x;
+				int snakeYCorner = snake.getHeadCorner().y;
+
+				return snakeXCorner >= xFoodStart && snakeXCorner < xFoodEnd && snakeYCorner >= yFoodStart
+						&& snakeYCorner < yFoodEnd;
 			}
 
 			private void drawFood() {
+
+				if (!isFoodEaten) {
+					root.getChildren().add(food);
+					return;
+				}
+
 				int max = WIDTH - 10;
 				int min = 10;
 				int randomX = min + (int) (Math.random() * (max - min + 1));
@@ -113,14 +160,14 @@ public class Main extends Application {
 				food.setCenterX(randomX);
 				food.setCenterY(randomY);
 				food.setFill(Color.RED);
-				food.setRadius(5);
+				food.setRadius(SIZE);
 
 				root.getChildren().add(food);
-				foodCount++;
+				isFoodEaten = false;
 			}
 
 			private boolean isFoodOnPlane() {
-				return foodCount > 0;
+				return isFoodEaten;
 			}
 
 			private void clearScreen() {
@@ -133,7 +180,7 @@ public class Main extends Application {
 					var circle = new Circle();
 					circle.setCenterX(corner.x);
 					circle.setCenterY(corner.y);
-					circle.setRadius(5);
+					circle.setRadius(SIZE);
 					circle.setFill(Color.BLACK);
 
 					root.getChildren().add(circle);

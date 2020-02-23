@@ -33,12 +33,12 @@ public class Snake {
 	public Snake(Corner headCorner) {
 		this.corners = new ArrayList<Corner>();
 		this.corners.add(headCorner);
-		this.corners.add(new Corner(headCorner.x - 5, headCorner.y));
 		this.corners.add(new Corner(headCorner.x - 10, headCorner.y));
-		this.corners.add(new Corner(headCorner.x - 15, headCorner.y));
 		this.corners.add(new Corner(headCorner.x - 20, headCorner.y));
-		this.corners.add(new Corner(headCorner.x - 25, headCorner.y));
-		this.corners.add(new Corner(headCorner.x - 30, headCorner.y));
+//		this.corners.add(new Corner(headCorner.x - 30, headCorner.y));
+//		this.corners.add(new Corner(headCorner.x - 40, headCorner.y));
+//		this.corners.add(new Corner(headCorner.x - 50, headCorner.y));
+//		this.corners.add(new Corner(headCorner.x - 60, headCorner.y));
 
 		this.direction = Direction.RIGHT;
 		this.length = corners.size();
@@ -144,6 +144,10 @@ public class Snake {
 		} else if(this.direction.equals(Direction.UP)) {
 			this.corners.add(new Corner(last.x + speed, last.y - speed));
 		}
+	}
+
+	public int getSize() { 
+		return this.corners.size();
 	}
 
 }
